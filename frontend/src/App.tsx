@@ -7,7 +7,7 @@ import Emergency from './pages/Emergency'
 function App() {
   return (
     <BrowserRouter>
-      <div className="bg-gray-900 min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />

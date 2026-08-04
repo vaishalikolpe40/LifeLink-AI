@@ -23,12 +23,12 @@ const features = [
 
 function Features() {
   return (
-    <section className="bg-gray-900 px-6 py-20">
+    <section className="bg-white px-6 py-20">
       <div className="max-w-6xl mx-auto text-center mb-14">
-        <h2 className="text-3xl md:text-4xl font-bold text-white">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
           Built for Every Second That Matters
         </h2>
-        <p className="text-gray-400 mt-4 max-w-xl mx-auto">
+        <p className="text-slate-600 mt-4 max-w-xl mx-auto">
           LifeLink AI combines intelligence and speed to make emergencies less chaotic.
         </p>
       </div>
@@ -37,11 +37,11 @@ function Features() {
         {features.map((feature) => (
           <div
             key={feature.title}
-            className="bg-gray-800 border border-gray-700 rounded-xl p-6 hover:border-red-500 transition"
+            className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-blue-300 transition"
           >
             <div className="text-3xl mb-4">{feature.icon}</div>
-            <h3 className="text-white font-semibold text-lg mb-2">{feature.title}</h3>
-            <p className="text-gray-400 text-sm">{feature.description}</p>
+            <h3 className="text-slate-900 font-semibold text-lg mb-2">{feature.title}</h3>
+            <p className="text-slate-600 text-sm">{feature.description}</p>
           </div>
         ))}
       </div>
