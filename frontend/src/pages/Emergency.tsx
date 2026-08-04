@@ -9,13 +9,55 @@ const emergencyTypes = [
   { icon: "❓", label: "Other" },
 ]
 
+const firstAidGuide: Record<string, string[]> = {
+  "Snake Bite": [
+    "Keep the patient calm and still",
+    "Keep the affected limb below heart level",
+    "Remove tight jewellery or clothing near the bite",
+    "Do not cut the wound or try to suck out venom",
+    "Do not apply ice or a tight tourniquet",
+  ],
+  "Accident": [
+    "Do not move the patient unless there's immediate danger",
+    "Check for breathing and consciousness",
+    "Apply gentle pressure to any bleeding wounds",
+    "Keep the patient warm and calm",
+    "Do not give food or water",
+  ],
+  "Chest Pain": [
+    "Help the patient sit down and stay calm",
+    "Loosen any tight clothing",
+    "If prescribed, help them take their heart medication",
+    "Do not let them exert themselves",
+    "Be ready to perform CPR if they become unresponsive",
+  ],
+  "Bleeding": [
+    "Apply firm, direct pressure with a clean cloth",
+    "Keep the injured area elevated above the heart if possible",
+    "Do not remove the cloth if it soaks through — add more on top",
+    "Keep the patient still and calm",
+  ],
+  "Burn Injury": [
+    "Cool the burn under running water for 10-20 minutes",
+    "Do not apply ice, butter, or ointments",
+    "Remove tight clothing/jewellery near the burn before swelling starts",
+    "Cover loosely with a clean, non-stick cloth",
+  ],
+  "Other": [
+    "Stay calm and keep the patient safe",
+    "Do not move them if a spinal injury is suspected",
+    "Monitor their breathing and consciousness",
+    "Keep them warm while help is on the way",
+  ],
+}
+
 function Emergency() {
-  const [step, setStep] = useState<"choose" | "medical-type" | "confirmed">("choose")
+  const [step, setStep] = useState<"choose" | "medical-type" | "first-aid">("choose")
   const [selectedType, setSelectedType] = useState<string | null>(null)
 
   function handleSelectType(label: string) {
     setSelectedType(label)
-    setStep("confirmed")
+    setStep("first-aid")
   }
 
   return (
@@ -59,16 +101,34 @@ function Emergency() {
         </>
       )}
 
-      {step === "confirmed" && (
-        <>
-          <div className="text-5xl mb-4">✅</div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-3">{selectedType} Selected</h1>
-          <p className="text-slate-600 max-w-md mb-8">Next, our AI will analyze the situation and guide you through first aid and hospital coordination.</p>
+      {step === "first-aid" && selectedType && (
+        <div className="max-w-xl w-full">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm text-left">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="text-3xl">🩹</span>
+              <h1 className="text-2xl font-bold text-slate-900">
+                First Aid: {selectedType}
+              </h1>
+            </div>
 
-          <button onClick={() => setStep("medical-type")} className="text-slate-500 hover:text-slate-700 text-sm underline">
+            <ul className="space-y-3">
+              {firstAidGuide[selectedType].map((instruction, index) => (
+                <li key={index} className="flex items-start gap-3 text-slate-700">
+                  <span className="text-blue-600 font-bold">{index + 1}.</span>
+                  <span>{instruction}</span>
+                </li>
+              ))}
+            </ul>
+
+            <p className="text-sm text-slate-500 mt-6 italic">
+              These instructions remain visible while help is being arranged.
+            </p>
+          </div>
+
+          <button onClick={() => setStep("medical-type")} className="mt-6 text-slate-500 hover:text-slate-700 text-sm underline">
             ← Change emergency type
           </button>
-        </>
+        </div>
       )}
     </section>
   )
