@@ -10,24 +10,23 @@ const emergencyTypes = [
 ]
 
 function Emergency() {
-  const [step, setStep] = useState<"choose" | "medical-type">("choose")
+  const [step, setStep] = useState<"choose" | "medical-type" | "confirmed">("choose")
+  const [selectedType, setSelectedType] = useState<string | null>(null)
+
+  function handleSelectType(label: string) {
+    setSelectedType(label)
+    setStep("confirmed")
+  }
 
   return (
     <section className="min-h-[80vh] flex flex-col items-center justify-center text-center px-6 bg-slate-50 py-16">
       {step === "choose" && (
         <>
-          <h1 className="text-4xl font-bold text-slate-900 mb-3">
-            What's the Emergency?
-          </h1>
-          <p className="text-slate-600 max-w-md mb-10">
-            Choose the type of help you need. We'll guide you through the rest.
-          </p>
+          <h1 className="text-4xl font-bold text-slate-900 mb-3">What's the Emergency?</h1>
+          <p className="text-slate-600 max-w-md mb-10">Choose the type of help you need. We'll guide you through the rest.</p>
 
           <div className="flex flex-col sm:flex-row gap-6">
-            <button
-              onClick={() => setStep("medical-type")}
-              className="bg-red-500 hover:bg-red-600 transition text-white font-semibold text-lg px-10 py-8 rounded-2xl flex flex-col items-center gap-2 w-64 shadow-sm"
-            >
+            <button onClick={() => setStep("medical-type")} className="bg-red-500 hover:bg-red-600 transition text-white font-semibold text-lg px-10 py-8 rounded-2xl flex flex-col items-center gap-2 w-64 shadow-sm">
               <span className="text-4xl">🚑</span>
               Medical Emergency
             </button>
@@ -42,30 +41,32 @@ function Emergency() {
 
       {step === "medical-type" && (
         <>
-          <h1 className="text-4xl font-bold text-slate-900 mb-3">
-            What Happened?
-          </h1>
-          <p className="text-slate-600 max-w-md mb-10">
-            Select the type of medical emergency so we can help faster.
-          </p>
+          <h1 className="text-4xl font-bold text-slate-900 mb-3">What Happened?</h1>
+          <p className="text-slate-600 max-w-md mb-10">Select the type of medical emergency so we can help faster.</p>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl">
             {emergencyTypes.map((type) => (
-              <button
-                key={type.label}
-                className="bg-white hover:bg-slate-100 transition border border-slate-200 rounded-xl p-6 flex flex-col items-center gap-2 shadow-sm"
-              >
+              <button key={type.label} onClick={() => handleSelectType(type.label)} className="bg-white hover:bg-slate-100 transition border border-slate-200 rounded-xl p-6 flex flex-col items-center gap-2 shadow-sm">
                 <span className="text-3xl">{type.icon}</span>
                 <span className="text-slate-800 font-medium text-sm">{type.label}</span>
               </button>
             ))}
           </div>
 
-          <button
-            onClick={() => setStep("choose")}
-            className="mt-8 text-slate-500 hover:text-slate-700 text-sm underline"
-          >
+          <button onClick={() => setStep("choose")} className="mt-8 text-slate-500 hover:text-slate-700 text-sm underline">
             ← Go back
+          </button>
+        </>
+      )}
+
+      {step === "confirmed" && (
+        <>
+          <div className="text-5xl mb-4">✅</div>
+          <h1 className="text-3xl font-bold text-slate-900 mb-3">{selectedType} Selected</h1>
+          <p className="text-slate-600 max-w-md mb-8">Next, our AI will analyze the situation and guide you through first aid and hospital coordination.</p>
+
+          <button onClick={() => setStep("medical-type")} className="text-slate-500 hover:text-slate-700 text-sm underline">
+            ← Change emergency type
           </button>
         </>
       )}
