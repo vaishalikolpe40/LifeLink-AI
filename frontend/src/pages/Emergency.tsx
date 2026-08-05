@@ -252,6 +252,9 @@ function Emergency() {
             <p className="text-slate-600">
               AI selected this based on distance, specialist availability, and ICU capacity.
             </p>
+            {ambulanceChoice === "yes" && (
+              <p className="text-sm text-blue-600 mt-2">Ambulance requested — dispatching now.</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-4">
