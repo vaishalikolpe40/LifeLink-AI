@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const emergencyTypes = [
   { icon: "🐍", label: "Snake Bite" },
@@ -78,13 +78,21 @@ const mockHospitals = [
   },
 ]
 
-type Step = "choose" | "medical-type" | "first-aid" | "ambulance-question" | "hospital-match"
+type Step =
+  | "choose"
+  | "medical-type"
+  | "first-aid"
+  | "ambulance-question"
+  | "hospital-match"
+  | "tracking"
+
 type AmbulanceChoice = "yes" | "no" | "not-sure"
 
 function Emergency() {
   const [step, setStep] = useState<Step>("choose")
   const [selectedType, setSelectedType] = useState<string | null>(null)
   const [ambulanceChoice, setAmbulanceChoice] = useState<AmbulanceChoice | null>(null)
+  const [etaMinutes, setEtaMinutes] = useState(8)
 
   function handleSelectType(label: string) {
     setSelectedType(label)
@@ -95,6 +103,16 @@ function Emergency() {
     setAmbulanceChoice(choice)
     setStep("hospital-match")
   }
+
+  useEffect(() => {
+    if (step !== "tracking") return
+
+    const interval = setInterval(() => {
+      setEtaMinutes((prev) => (prev > 1 ? prev - 1 : prev))
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [step])
 
   return (
     <section className="min-h-[80vh] flex flex-col items-center justify-center text-center px-6 bg-slate-50 py-16">
@@ -248,9 +266,35 @@ function Emergency() {
           </div>
 
           <div className="text-center mt-8">
-            <button className="bg-red-500 hover:bg-red-600 transition text-white font-semibold px-8 py-3 rounded-lg shadow-sm">
+            <button onClick={() => setStep("tracking")} className="bg-red-500 hover:bg-red-600 transition text-white font-semibold px-8 py-3 rounded-lg shadow-sm">
               Confirm & Notify Hospital
             </button>
+          </div>
+        </div>
+      )}
+
+      {step === "tracking" && (
+        <div className="max-w-md w-full text-center">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+            <div className="text-5xl mb-4">🚑</div>
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">
+              Ambulance On the Way
+            </h1>
+            <p className="text-slate-600 mb-6">
+              City Care General Hospital has been notified and dispatched help.
+            </p>
+
+            <div className="bg-slate-50 rounded-xl p-6 mb-6">
+              <div className="text-4xl font-bold text-blue-600 mb-1">
+                {etaMinutes} min
+              </div>
+              <div className="text-sm text-slate-500">Estimated arrival time</div>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 text-sm text-green-600 font-medium">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              Live tracking active
+            </div>
           </div>
         </div>
       )}
