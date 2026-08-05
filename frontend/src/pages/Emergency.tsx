@@ -51,7 +51,34 @@ const firstAidGuide: Record<string, string[]> = {
   ],
 }
 
-type Step = "choose" | "medical-type" | "first-aid" | "ambulance-question"
+const mockHospitals = [
+  {
+    name: "City Care General Hospital",
+    distance: "2.4 km",
+    eta: "6 mins",
+    specialist: "Emergency & Trauma",
+    icu: "Available",
+    match: "Best Match",
+  },
+  {
+    name: "St. Mary's Medical Center",
+    distance: "4.1 km",
+    eta: "10 mins",
+    specialist: "General Medicine",
+    icu: "Available",
+    match: null,
+  },
+  {
+    name: "Apex Multispecialty Hospital",
+    distance: "5.8 km",
+    eta: "13 mins",
+    specialist: "Cardiology & ICU",
+    icu: "Limited",
+    match: null,
+  },
+]
+
+type Step = "choose" | "medical-type" | "first-aid" | "ambulance-question" | "hospital-match"
 type AmbulanceChoice = "yes" | "no" | "not-sure"
 
 function Emergency() {
@@ -66,6 +93,7 @@ function Emergency() {
 
   function handleAmbulanceChoice(choice: AmbulanceChoice) {
     setAmbulanceChoice(choice)
+    setStep("hospital-match")
   }
 
   return (
@@ -178,12 +206,52 @@ function Emergency() {
               <div className="text-sm text-slate-500">Ask us a few quick questions to decide</div>
             </button>
           </div>
+        </div>
+      )}
 
-          {ambulanceChoice && (
-            <p className="mt-6 text-slate-600 text-sm">
-              You selected: <span className="font-semibold text-slate-900">{ambulanceChoice}</span> — hospital matching comes next.
+      {step === "hospital-match" && (
+        <div className="max-w-2xl w-full text-left">
+          <div className="text-center mb-10">
+            <h1 className="text-3xl font-bold text-slate-900 mb-3">
+              Best Hospital Match Found
+            </h1>
+            <p className="text-slate-600">
+              AI selected this based on distance, specialist availability, and ICU capacity.
             </p>
-          )}
+          </div>
+
+          <div className="flex flex-col gap-4">
+            {mockHospitals.map((hospital) => (
+              <div
+                key={hospital.name}
+                className={`bg-white rounded-xl p-6 border-2 ${
+                  hospital.match ? "border-blue-500 shadow-md" : "border-slate-200"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-slate-900 text-lg">{hospital.name}</h3>
+                  {hospital.match && (
+                    <span className="bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full">
+                      {hospital.match}
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm text-slate-600 mt-3">
+                  <div>📍 {hospital.distance}</div>
+                  <div>⏱️ {hospital.eta}</div>
+                  <div>🩺 {hospital.specialist}</div>
+                  <div>🛏️ ICU: {hospital.icu}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <button className="bg-red-500 hover:bg-red-600 transition text-white font-semibold px-8 py-3 rounded-lg shadow-sm">
+              Confirm & Notify Hospital
+            </button>
+          </div>
         </div>
       )}
     </section>
