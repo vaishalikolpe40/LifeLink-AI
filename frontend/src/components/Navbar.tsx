@@ -9,8 +9,9 @@ function Navbar() {
 
       <div className="flex gap-6 text-sm text-slate-600">
         <Link to="/" className="hover:text-blue-600 transition">Home</Link>
-        <a href="#" className="hover:text-blue-600 transition">About</a>
-        <a href="#" className="hover:text-blue-600 transition">Contact</a>
+        <Link to="/about" className="hover:text-blue-600 transition">About</Link>
+        <Link to="/contact" className="hover:text-blue-600 transition">Contact</Link>
+        <Link to="/login" className="hover:text-blue-600 transition">Login</Link>
       </div>
 
       <Link
