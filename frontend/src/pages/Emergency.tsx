@@ -51,13 +51,21 @@ const firstAidGuide: Record<string, string[]> = {
   ],
 }
 
+type Step = "choose" | "medical-type" | "first-aid" | "ambulance-question"
+type AmbulanceChoice = "yes" | "no" | "not-sure"
+
 function Emergency() {
-  const [step, setStep] = useState<"choose" | "medical-type" | "first-aid">("choose")
+  const [step, setStep] = useState<Step>("choose")
   const [selectedType, setSelectedType] = useState<string | null>(null)
+  const [ambulanceChoice, setAmbulanceChoice] = useState<AmbulanceChoice | null>(null)
 
   function handleSelectType(label: string) {
     setSelectedType(label)
     setStep("first-aid")
+  }
+
+  function handleAmbulanceChoice(choice: AmbulanceChoice) {
+    setAmbulanceChoice(choice)
   }
 
   return (
@@ -125,9 +133,57 @@ function Emergency() {
             </p>
           </div>
 
-          <button onClick={() => setStep("medical-type")} className="mt-6 text-slate-500 hover:text-slate-700 text-sm underline">
-            ← Change emergency type
-          </button>
+          <div className="flex items-center justify-between mt-6">
+            <button onClick={() => setStep("medical-type")} className="text-slate-500 hover:text-slate-700 text-sm underline">
+              ← Change emergency type
+            </button>
+            <button onClick={() => setStep("ambulance-question")} className="bg-blue-600 hover:bg-blue-700 transition text-white font-medium px-6 py-3 rounded-lg">
+              Continue →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === "ambulance-question" && (
+        <div className="max-w-md w-full">
+          <h1 className="text-3xl font-bold text-slate-900 mb-3">
+            Do You Need an Ambulance?
+          </h1>
+          <p className="text-slate-600 mb-8">
+            This helps us arrange the right kind of transport to the hospital.
+          </p>
+
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={() => handleAmbulanceChoice("yes")}
+              className="bg-white hover:bg-blue-50 transition border-2 border-slate-200 hover:border-blue-500 rounded-xl p-5 text-left"
+            >
+              <div className="font-semibold text-slate-900">Yes, send an ambulance</div>
+              <div className="text-sm text-slate-500">We'll dispatch the nearest available one</div>
+            </button>
+
+            <button
+              onClick={() => handleAmbulanceChoice("no")}
+              className="bg-white hover:bg-blue-50 transition border-2 border-slate-200 hover:border-blue-500 rounded-xl p-5 text-left"
+            >
+              <div className="font-semibold text-slate-900">No, we have our own vehicle</div>
+              <div className="text-sm text-slate-500">We'll show you the fastest route instead</div>
+            </button>
+
+            <button
+              onClick={() => handleAmbulanceChoice("not-sure")}
+              className="bg-white hover:bg-blue-50 transition border-2 border-slate-200 hover:border-blue-500 rounded-xl p-5 text-left"
+            >
+              <div className="font-semibold text-slate-900">Not sure</div>
+              <div className="text-sm text-slate-500">Ask us a few quick questions to decide</div>
+            </button>
+          </div>
+
+          {ambulanceChoice && (
+            <p className="mt-6 text-slate-600 text-sm">
+              You selected: <span className="font-semibold text-slate-900">{ambulanceChoice}</span> — hospital matching comes next.
+            </p>
+          )}
         </div>
       )}
     </section>
