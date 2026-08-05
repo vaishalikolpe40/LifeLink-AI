@@ -78,6 +78,14 @@ const mockHospitals = [
   },
 ]
 
+const policeIncidentTypes = [
+  { icon: "🔓", label: "Theft" },
+  { icon: "⚠️", label: "Assault" },
+  { icon: "😰", label: "Harassment" },
+  { icon: "🚨", label: "Crime in Progress" },
+  { icon: "❓", label: "Other" },
+]
+
 type Step =
   | "choose"
   | "medical-type"
@@ -85,6 +93,8 @@ type Step =
   | "ambulance-question"
   | "hospital-match"
   | "tracking"
+  | "police-type"
+  | "police-confirmed"
 
 type AmbulanceChoice = "yes" | "no" | "not-sure"
 
@@ -93,6 +103,7 @@ function Emergency() {
   const [selectedType, setSelectedType] = useState<string | null>(null)
   const [ambulanceChoice, setAmbulanceChoice] = useState<AmbulanceChoice | null>(null)
   const [etaMinutes, setEtaMinutes] = useState(8)
+  const [policeIncident, setPoliceIncident] = useState<string | null>(null)
 
   function handleSelectType(label: string) {
     setSelectedType(label)
@@ -102,6 +113,11 @@ function Emergency() {
   function handleAmbulanceChoice(choice: AmbulanceChoice) {
     setAmbulanceChoice(choice)
     setStep("hospital-match")
+  }
+
+  function handlePoliceIncident(label: string) {
+    setPoliceIncident(label)
+    setStep("police-confirmed")
   }
 
   useEffect(() => {
@@ -127,7 +143,7 @@ function Emergency() {
               Medical Emergency
             </button>
 
-            <button className="bg-blue-600 hover:bg-blue-700 transition text-white font-semibold text-lg px-10 py-8 rounded-2xl flex flex-col items-center gap-2 w-64 shadow-sm">
+            <button onClick={() => setStep("police-type")} className="bg-blue-600 hover:bg-blue-700 transition text-white font-semibold text-lg px-10 py-8 rounded-2xl flex flex-col items-center gap-2 w-64 shadow-sm">
               <span className="text-4xl">🚓</span>
               Police Emergency
             </button>
@@ -296,6 +312,54 @@ function Emergency() {
               Live tracking active
             </div>
           </div>
+        </div>
+      )}
+
+      {step === "police-type" && (
+        <>
+          <h1 className="text-4xl font-bold text-slate-900 mb-3">What's the Incident?</h1>
+          <p className="text-slate-600 max-w-md mb-10">Select the incident type so the nearest police station can respond.</p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl">
+            {policeIncidentTypes.map((type) => (
+              <button
+                key={type.label}
+                onClick={() => handlePoliceIncident(type.label)}
+                className="bg-white hover:bg-slate-100 transition border border-slate-200 rounded-xl p-6 flex flex-col items-center gap-2 shadow-sm"
+              >
+                <span className="text-3xl">{type.icon}</span>
+                <span className="text-slate-800 font-medium text-sm">{type.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <button onClick={() => setStep("choose")} className="mt-8 text-slate-500 hover:text-slate-700 text-sm underline">
+            ← Go back
+          </button>
+        </>
+      )}
+
+      {step === "police-confirmed" && policeIncident && (
+        <div className="max-w-md w-full">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+            <div className="text-5xl mb-4">🚓</div>
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">
+              Police Notified
+            </h1>
+            <p className="text-slate-600 mb-6">
+              Your report — <span className="font-semibold text-slate-900">{policeIncident}</span> — along with your
+              current location has been sent to the nearest police station.
+            </p>
+
+            <div className="flex items-center justify-center gap-2 text-sm text-green-600 font-medium">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              Awaiting response update
+            </div>
+          </div>
+
+          <button onClick={() => setStep("choose")} className="mt-6 text-slate-500 hover:text-slate-700 text-sm underline">
+            ← Back to home
+          </button>
         </div>
       )}
     </section>
