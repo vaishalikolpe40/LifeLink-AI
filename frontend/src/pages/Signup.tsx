@@ -1,15 +1,37 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 function Signup() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [bloodGroup, setBloodGroup] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  const navigate = useNavigate()
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    console.log('Signup attempt:', { name, email, password, bloodGroup })
+    setError('')
+    setLoading(true)
+
+    try {
+      await axios.post('http://localhost:8000/signup', {
+        name,
+        email,
+        password,
+        blood_group: bloodGroup,
+      })
+
+      navigate('/login')
+    } catch (err) {
+      setError('Something went wrong. Please try again.')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -17,6 +39,12 @@ function Signup() {
       <div className="max-w-md w-full bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">Create Your Account</h1>
         <p className="text-slate-600 mb-6">Set up your medical profile for faster emergency response.</p>
+
+        {error && (
+          <div className="bg-red-50 text-red-600 text-sm px-4 py-2 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
@@ -77,9 +105,10 @@ function Signup() {
 
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 transition text-white font-medium py-2.5 rounded-lg mt-2"
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 transition text-white font-medium py-2.5 rounded-lg mt-2 disabled:opacity-50"
           >
-            Create Account
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 
