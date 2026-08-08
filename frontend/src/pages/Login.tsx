@@ -1,13 +1,37 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  const navigate = useNavigate()
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    console.log('Login attempt:', { email, password })
+    setError('')
+    setLoading(true)
+
+    try {
+      const response = await axios.post('http://localhost:8000/login', {
+        email,
+        password,
+      })
+
+      console.log(response.data.message)
+      navigate('/dashboard/patient')
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        setError(err.response.data.detail)
+      } else {
+        setError('Something went wrong. Please try again.')
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -15,6 +39,12 @@ function Login() {
       <div className="max-w-md w-full bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">Welcome Back</h1>
         <p className="text-slate-600 mb-6">Log in to access your LifeLink AI account.</p>
+
+        {error && (
+          <div className="bg-red-50 text-red-600 text-sm px-4 py-2 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
@@ -43,9 +73,10 @@ function Login() {
 
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 transition text-white font-medium py-2.5 rounded-lg mt-2"
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 transition text-white font-medium py-2.5 rounded-lg mt-2 disabled:opacity-50"
           >
-            Log In
+            {loading ? "Logging In..." : "Log In"}
           </button>
         </form>
 
